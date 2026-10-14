@@ -273,7 +273,23 @@ function run(label, { parseError, diagramTypeThrows = false, remote = undefined,
 // ---------------------------------------------------------------- a missing kit is not a boot failure
 {
   const broken = run('missing-kit', { missingKit: true })
-  check('a missing kit registers nothing', broken.tabTypes.length === 0 && broken.registrations.length === 0)
+  // A missing kit used to leave the preview silently inert. It now claims the extension and
+  // registers a body that names the package and the spec to install: a silent failure cannot be
+  // told apart from "the plugin does not work".
+  check(
+    'a missing kit still claims the extension',
+    broken.tabTypes.length === 1 && broken.tabTypes[0].canOpen('dsh-resource://file/session/s1/x.mmd') === true,
+    JSON.stringify(broken.tabTypes.map((type) => type.patterns)),
+  )
+  check('and registers a body that explains', broken.registrations.length === 1)
+  if (broken.registrations.length === 1) {
+    const kitless = mount(broken.registrations[0].component, broken.tabProps())
+    check(
+      'which names the package and how to install it',
+      kitless.text.includes('dsh-preview-kit') && kitless.text.includes('github:Sayi/dsh-plugin-kit'),
+      kitless.text.slice(0, 240),
+    )
+  }
   check('and does not throw out of apply', broken.injected !== undefined)
 }
 

@@ -40,6 +40,26 @@ window.__ModuleLoader__.load({
     /** Diagram extensions this bundle previews. */
     const D2_EXTENSIONS = ['d2']
 
+    /** The shared chrome, and how to install it when it is missing. */
+    const KIT_INSTALL_HINT = 'github:Sayi/dsh-plugin-kit#path:packages/dsh-preview-kit'
+
+    /** The Session and path of a `dsh-resource://file/session/<id>/<path>` address. */
+    function parseSessionAddress(address) {
+      const head = 'dsh-resource://file/session/'
+      if (typeof address !== 'string' || !address.startsWith(head)) return undefined
+      const tail = address.slice(head.length).split(/[?#]/)[0]
+      const cut = tail.indexOf('/')
+      if (cut < 0) return undefined
+      return {
+        sessionId: decodeURIComponent(tail.slice(0, cut)),
+        path: tail
+          .slice(cut + 1)
+          .split('/')
+          .map((segment) => decodeURIComponent(segment))
+          .join('/'),
+      }
+    }
+
     /** The Host's per-process routes and secret, injected into the page at boot. */
     function hostBridge() {
       const injected = window.__DSH_D2__
@@ -127,7 +147,47 @@ window.__ModuleLoader__.load({
     return {
       inject: INJECT,
       apply(ctx) {
-        if (kit === undefined) return
+        if (kit === undefined) {
+          // No kit, no preview — but silence is the wrong answer: register the type and a body
+          // that names the missing package and how to install it.
+          try {
+            ctx.effect(
+              () =>
+                ctx.sidebarRightTabs.register({
+                  id: TYPE_ID,
+                  kind: KIND,
+                  patterns: D2_EXTENSIONS.map((extension) => `*.${extension}`),
+                  canOpen: (address) => parseSessionAddress(address) !== undefined,
+                  title: (address) => {
+                    const file = parseSessionAddress(address)
+                    return file === undefined ? '图表' : file.path.split('/').pop() ?? '图表'
+                  },
+                }),
+              'dsh-d2: diagram type (kit missing)',
+            )
+            ctx.effect(
+              () =>
+                ctx.slots.inject('sidebar.right.pane.tab', () =>
+                  ctx.slots.register({ name: 'sidebar.right.pane.tab', key: TYPE_ID }, () =>
+                    React.createElement(
+                      'div',
+                      { style: { padding: '16px', fontSize: '13px', lineHeight: '20px' } },
+                      '这个预览需要 dsh-preview-kit，但当前没有安装。先安装它，再重新打开这个标签：',
+                      React.createElement(
+                        'pre',
+                        { style: { marginTop: '8px', whiteSpace: 'pre-wrap' } },
+                        KIT_INSTALL_HINT,
+                      ),
+                    ),
+                  ),
+                ),
+              'dsh-d2: diagram body (kit missing)',
+            )
+          } catch (error) {
+            console.warn('[dsh-d2] the fallback could not be registered', error)
+          }
+          return
+        }
         // A plugin must not be able to keep the app from booting: an exception in `apply` fails
         // this entry's activation, and the desktop shell treats a failed web boot as fatal.
         try {

@@ -294,7 +294,23 @@ function run(label, { missingKit = false, compileFails = false, typeThrows = fal
 // ---------------------------------------------------------------- failures that must stay inert
 {
   const missing = run('missing-kit', { missingKit: true })
-  check('a missing kit registers nothing', missing.tabTypes.length === 0 && missing.registrations.length === 0)
+  // A missing kit used to leave the preview silently inert. It now claims the extension and
+  // registers a body that names the package and the spec to install: a silent failure cannot be
+  // told apart from "the plugin does not work".
+  check(
+    'a missing kit still claims the extension',
+    missing.tabTypes.length === 1 && missing.tabTypes[0].canOpen('dsh-resource://file/session/s1/x.d2') === true,
+    JSON.stringify(missing.tabTypes.map((type) => type.patterns)),
+  )
+  check('and registers a body that explains', missing.registrations.length === 1)
+  if (missing.registrations.length === 1) {
+    const kitless = mount(missing.registrations[0].component, missing.tabProps())
+    check(
+      'which names the package and how to install it',
+      kitless.text.includes('dsh-preview-kit') && kitless.text.includes('github:Sayi/dsh-plugin-kit'),
+      kitless.text.slice(0, 240),
+    )
+  }
   const refused = run('refused-type', { typeThrows: true })
   check('a refused registration does not throw out of apply', refused.tabTypes.length === 0 && refused.injected !== undefined)
 }

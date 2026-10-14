@@ -17,8 +17,8 @@ dsh-d2             *.d2                     → d2 CLI，Host 侧编译
 | --- | --- | --- | --- | --- |
 | **dsh-file-session** | 把会话锁定到唯一文件：绑定后只能写它，并把会话改名成文件名 | Agent Preset「文件会话」 | 仓库根目录 | 31 + 41 |
 | **dsh-preview-kit** | 预览外壳：头部行、视图下拉、拖拽缩放、代码视图、打开方式、诊断路由 | —— | [`packages/dsh-preview-kit`](packages/dsh-preview-kit/README.md) | 10 |
-| **dsh-mermaid** | Mermaid 图表预览（渲染 + 源码高亮） | `*.mmd` `*.mermaid` | [`packages/dsh-mermaid`](packages/dsh-mermaid/README.md) | 18 + 42 |
-| **dsh-d2** | D2 图表预览（Host 侧调用 `d2` 编译） | `*.d2` | [`packages/dsh-d2`](packages/dsh-d2/README.md) | 22 + 22 |
+| **dsh-mermaid** | Mermaid 图表预览（渲染 + 源码高亮） | `*.mmd` `*.mermaid` | [`packages/dsh-mermaid`](packages/dsh-mermaid/README.md) | 18 + 44 |
+| **dsh-d2** | D2 图表预览（Host 侧调用 `d2` 编译） | `*.d2` | [`packages/dsh-d2`](packages/dsh-d2/README.md) | 22 + 24 |
 
 > 断言数是 `host + browser` 两套测试的条数，每个包都自带 `test/` 与 `pnpm test`。
 
@@ -111,12 +111,21 @@ curl -s "$DSH_WEB_URL/dsh-file-session/health"
 
 DSH 的插件管理器会读安装前后的 `dependencies` 差异：**必须恰好新增或改变一条**，否则会报「无法从依赖变更中确定安装了哪一个包」。所以地址要指向**某一个包的清单**：
 
+**每个插件一条地址**（都实测过：各只产生一条依赖变化，正好满足管理器的要求）：
+
 | 装哪个 | 填什么 |
 | --- | --- |
-| `dsh-file-session`（根包） | `github:Sayi/dsh-plugin-kit`（实测可行：只产生 `dsh-file-session` 一条变化） |
-| `dsh-preview-kit` / `dsh-mermaid` / `dsh-d2` | **各自目录的绝对路径**（需先 `git clone`）：`/path/to/dsh-plugin-kit/packages/dsh-mermaid` |
+| `dsh-file-session` | `github:Sayi/dsh-plugin-kit` |
+| `dsh-preview-kit` | `github:Sayi/dsh-plugin-kit#path:packages/dsh-preview-kit` |
+| `dsh-mermaid` | `github:Sayi/dsh-plugin-kit#path:packages/dsh-mermaid` |
+| `dsh-d2` | `github:Sayi/dsh-plugin-kit#path:packages/dsh-d2` |
 
-⚠️ **子包不能填仓库地址**：一个 git 地址只会解析到**根包**的名字（`dsh-file-session`），对 `packages/` 下的三个包会"没有依赖变化"，也就是那句报错。想让它们也能按名字安装，需要先把三个包发布到 npm。
+两条注意：
+
+- **先装 `dsh-preview-kit`**：两个预览都要 `require` 它。装不上时会明确提示（而不是静静不渲染），提示里就写着上面那条地址。
+- **一次只能装一个**：管理器的判定是"安装前后恰好一条依赖变化"，所以"一个地址装四个包"做不到 —— 这是平台的规则。填仓库地址却想装子包，就会出现「无法从依赖变更中确定安装了哪一个包」。
+
+本地克隆时，也可以直接把**包目录的绝对路径**填进去（`/path/to/dsh-plugin-kit/packages/dsh-mermaid`），效果相同。
 
 ### 方式三：让 Agent 安装
 
