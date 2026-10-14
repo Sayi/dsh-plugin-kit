@@ -54,8 +54,12 @@ its compile route, and the grammar in its chunk (22 KiB: highlight.js core plus 
 
 ## Install
 
-Installed from this directory as a bundle, like any other. `index.js` or `cordis.patch.yml`
-changes need a Host restart; `client.js` changes reach a running page by themselves.
+Installed into the profile like any other bundle — one spec, verified against the plugin manager
+(it changes exactly one dependency):
+
+```text
+github:Sayi/dsh-plugin-kit#path:packages/dsh-d2
+```
 
 ## Tests
 

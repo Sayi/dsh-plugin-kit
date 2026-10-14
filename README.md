@@ -22,6 +22,19 @@ dsh-d2             *.d2                     → d2 CLI，Host 侧编译
 
 > 断言数是 `host + browser` 两套测试的条数，每个包都自带 `test/` 与 `pnpm test`。
 
+## 快速安装（DSH 插件管理器）
+
+每个插件一条地址，**都实测可行**（各只产生一条依赖变化 —— 这正是管理器要求的）。建议**先装 `dsh-preview-kit`**，两个预览都要用它。
+
+| 装哪个 | 在 DSH 里填什么 |
+| --- | --- |
+| `dsh-file-session` | `github:Sayi/dsh-plugin-kit` |
+| `dsh-preview-kit` | `github:Sayi/dsh-plugin-kit#path:packages/dsh-preview-kit` |
+| `dsh-mermaid` | `github:Sayi/dsh-plugin-kit#path:packages/dsh-mermaid` |
+| `dsh-d2` | `github:Sayi/dsh-plugin-kit#path:packages/dsh-d2` |
+
+**一次只能装一个**：管理器的判定是"安装前后恰好一条依赖变化"，所以"一个地址装四个包"做不到。填仓库地址去装 `packages/` 下的子包，就会出现「无法从依赖变更中确定安装了哪一个包」—— 详见 [安装](#安装)。
+
 ## 插件功能
 
 ### dsh-file-session — 一个文件一个会话

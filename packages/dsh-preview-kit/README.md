@@ -70,3 +70,16 @@ running page, not by guessing at the symptom.
 The kit's *behaviour* is covered where it is used: `dsh-mermaid`'s 42 assertions drive the real
 body this module builds, unchanged from before the extraction — which is what makes the
 extraction safe to trust.
+
+
+## Install
+
+Installed into the profile like any other bundle — one spec, verified against the plugin manager
+(it changes exactly one dependency):
+
+```text
+github:Sayi/dsh-plugin-kit#path:packages/dsh-preview-kit
+```
+
+Both previews `require` this package, so install it **first**. `client.js` changes reach a running
+page by themselves; `index.js` or `cordis.patch.yml` changes need a Host restart.

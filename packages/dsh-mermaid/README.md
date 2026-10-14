@@ -79,7 +79,12 @@ concern and needs no renderer, which is the point of the split.
 
 ## Install
 
-Installed from this directory as a bundle, in the same profile as any other:
+Installed into the same profile like any other bundle — one spec, verified against the plugin
+manager (it changes exactly one dependency):
+
+```text
+github:Sayi/dsh-plugin-kit#path:packages/dsh-mermaid
+```
 
 ```bash
 # the profile gets `dsh-mermaid` in dsh.profile.bundles; the row comes from cordis.patch.yml
