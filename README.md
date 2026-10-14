@@ -22,9 +22,9 @@ dsh-d2             *.d2                     → d2 CLI，Host 侧编译
 
 > 断言数是 `host + browser` 两套测试的条数，每个包都自带 `test/` 与 `pnpm test`。
 
-## 快速安装（DSH 插件管理器）
+## 安装
 
-每个插件一条地址，**都实测可行**（各只产生一条依赖变化 —— 这正是管理器要求的）。建议**先装 `dsh-preview-kit`**，两个预览都要用它。
+在 DSH 里逐个安装。每个插件一条地址，**都实测可行** —— 各只产生一条依赖变化，这正是插件管理器的要求。
 
 | 装哪个 | 在 DSH 里填什么 |
 | --- | --- |
@@ -33,7 +33,30 @@ dsh-d2             *.d2                     → d2 CLI，Host 侧编译
 | `dsh-mermaid` | `github:Sayi/dsh-plugin-kit#path:packages/dsh-mermaid` |
 | `dsh-d2` | `github:Sayi/dsh-plugin-kit#path:packages/dsh-d2` |
 
-**一次只能装一个**：管理器的判定是"安装前后恰好一条依赖变化"，所以"一个地址装四个包"做不到。填仓库地址去装 `packages/` 下的子包，就会出现「无法从依赖变更中确定安装了哪一个包」—— 详见 [安装](#安装)。
+两条注意：
+
+- **先装 `dsh-preview-kit`**：两个预览都要 `require` 它。没装时预览会明确提示，并在提示里给出这条地址。
+- **一次只能装一个**：管理器按"安装前后恰好一条依赖变化"判定装了哪个包，所以"一个地址装四个包"做不到；把仓库地址填去装 `packages/` 下的子包，就会出现「无法从依赖变更中确定安装了哪一个包」。
+
+### 前置条件
+
+- DSH 桌面端（本仓库按 0.2.x 的插件 / 插槽接口编写）。
+- 只有 `dsh-d2` 额外需要 [`d2` CLI](https://d2lang.com)：`brew install d2`（或用环境变量 `DSH_D2_BIN` 指定路径）。
+
+### 验证安装
+
+文件插件自带一个只读健康路由（计数、版本戳、错误名；不含路径与密钥）：
+
+```bash
+curl -s "$DSH_WEB_URL/dsh-file-session/health"
+# {"ok":true,"bindings":1,"liveAgents":0,"client":{"stamp":"…","injected":[…],"seats":3}}
+# 端口每次重启都会变：从页面 URL 或环境变量 $DSH_WEB_URL 取，不要写死。
+```
+
+### 卸载与单独缺席
+
+在插件管理器里卸载即可。**预览可以单独缺席**：`dsh-preview-kit` 不在时两个预览会变成惰性并提示如何安装，文件插件也能脱离它们单独工作。
+
 
 ## 插件功能
 
@@ -67,90 +90,12 @@ dsh-d2             *.d2                     → d2 CLI，Host 侧编译
 - **需要 `d2` 可执行文件**：`brew install d2`，或用环境变量 `DSH_D2_BIN` 指定；没装时预览会明确告诉你如何安装，而不是白屏。
 - chunk 仅 22 KB（highlight.js 核心 + 一份 D2 语法）。
 
-## 安装
-
-### 前置条件
-
-- DSH 桌面端（本仓库按 0.2.x 的插件 / 插槽接口编写）
-- Node.js ≥ 22 与 pnpm（构建 chunk、跑测试用）
-- 只有 `dsh-d2` 额外需要 [`d2` CLI](https://d2lang.com)：`brew install d2`
-
-### 方式一：从本地目录安装（开发时用）
-
-每个插件都是一个独立 bundle。安装 = 把包加进 DSH profile 的依赖，并在 profile 的 `dsh.profile.bundles` 里列出它。
-
-```bash
-# 1) profile 位置：~/.dsh/profiles/<profile>，桌面端默认是 desktop
-cd ~/.dsh/profiles/desktop
-
-# 2) 把插件链进 profile（本地目录用 link:，发布到 npm 后改为包名）
-git clone https://github.com/Sayi/dsh-plugin-kit && cd dsh-plugin-kit
-
-pnpm add link:$PWD                            # dsh-file-session 就在仓库根目录
-pnpm add link:$PWD/packages/dsh-preview-kit
-pnpm add link:$PWD/packages/dsh-mermaid
-pnpm add link:$PWD/packages/dsh-d2
-```
-
-```jsonc
-// 3) 编辑 ~/.dsh/profiles/desktop/package.json，把插件加进 bundles（放在官方 bundle 之后）
-"dsh": {
-  "profile": {
-    "bundles": [
-      "@deepseek-ai/dsh-base",
-      "@deepseek-ai/dsh-web-app",
-      "dsh-file-session",
-      "dsh-preview-kit",
-      "dsh-mermaid",
-      "dsh-d2"
-    ]
-  }
-}
-```
-
-```bash
-# 4) 重启 DSH：host 半与客户端 bundle 都在启动时加载
-```
-
-**验证安装**：文件插件自带一个只读健康路由（计数、版本戳、错误名；不含路径与密钥）。
-
-```bash
-curl -s "$DSH_WEB_URL/dsh-file-session/health"
-# {"ok":true,"bindings":1,"liveAgents":0,"client":{"stamp":"…","injected":[…],"seats":3}}
-# 端口每次重启都会变：从页面 URL 或环境变量 $DSH_WEB_URL 取，不要写死。
-```
-
-### 方式二：在 DSH 里安装（插件管理器）
-
-DSH 的插件管理器会读安装前后的 `dependencies` 差异：**必须恰好新增或改变一条**，否则会报「无法从依赖变更中确定安装了哪一个包」。所以地址要指向**某一个包的清单**：
-
-**每个插件一条地址**（都实测过：各只产生一条依赖变化，正好满足管理器的要求）：
-
-| 装哪个 | 填什么 |
-| --- | --- |
-| `dsh-file-session` | `github:Sayi/dsh-plugin-kit` |
-| `dsh-preview-kit` | `github:Sayi/dsh-plugin-kit#path:packages/dsh-preview-kit` |
-| `dsh-mermaid` | `github:Sayi/dsh-plugin-kit#path:packages/dsh-mermaid` |
-| `dsh-d2` | `github:Sayi/dsh-plugin-kit#path:packages/dsh-d2` |
-
-两条注意：
-
-- **先装 `dsh-preview-kit`**：两个预览都要 `require` 它。装不上时会明确提示（而不是静静不渲染），提示里就写着上面那条地址。
-- **一次只能装一个**：管理器的判定是"安装前后恰好一条依赖变化"，所以"一个地址装四个包"做不到 —— 这是平台的规则。填仓库地址却想装子包，就会出现「无法从依赖变更中确定安装了哪一个包」。
-
-本地克隆时，也可以直接把**包目录的绝对路径**填进去（`/path/to/dsh-plugin-kit/packages/dsh-mermaid`），效果相同。
-
-### 方式三：让 Agent 安装
-
-也可以直接让 Agent 装：把**包目录的绝对路径**或 npm 包名告诉它，它会加进 profile 的 bundle 列表，并在需要时提示你重启 —— 本仓库的四个插件就是这么装上去的。
-
-### 卸载与单独缺席
-
-从 `dsh.profile.bundles` 删掉名字、再从 `dependencies` 移除即可；只想停用就把该 bundle 标记为 disabled。**预览可以单独缺席**：`dsh-preview-kit` 不在时两个预览会安静地变成惰性（不注册、不报错、不影响启动），文件插件也能脱离它们单独工作。
-
 ## 开发
 
 ```bash
+# packages/* 里各装一次依赖（测试与构建用）
+cd packages/dsh-d2 && pnpm install
+
 # 每个包各自跑测试：host 半（真实 d2、路由、守卫）+ 浏览器半（真实模块、替身浏览器）
 cd packages/dsh-d2 && pnpm test
 
