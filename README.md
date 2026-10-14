@@ -107,9 +107,20 @@ curl -s "$DSH_WEB_URL/dsh-file-session/health"
 # 端口每次重启都会变：从页面 URL 或环境变量 $DSH_WEB_URL 取，不要写死。
 ```
 
-### 方式二：让 Agent 安装
+### 方式二：在 DSH 里安装（插件管理器）
 
-也可以直接让 Agent 装：把插件目录或 npm 包名告诉它，它会加进 profile 的 bundle 列表，并在需要时提示你重启 —— 本仓库的四个插件就是这么装上去的。
+DSH 的插件管理器会读安装前后的 `dependencies` 差异：**必须恰好新增或改变一条**，否则会报「无法从依赖变更中确定安装了哪一个包」。所以地址要指向**某一个包的清单**：
+
+| 装哪个 | 填什么 |
+| --- | --- |
+| `dsh-file-session`（根包） | `github:Sayi/dsh-plugin-kit`（实测可行：只产生 `dsh-file-session` 一条变化） |
+| `dsh-preview-kit` / `dsh-mermaid` / `dsh-d2` | **各自目录的绝对路径**（需先 `git clone`）：`/path/to/dsh-plugin-kit/packages/dsh-mermaid` |
+
+⚠️ **子包不能填仓库地址**：一个 git 地址只会解析到**根包**的名字（`dsh-file-session`），对 `packages/` 下的三个包会"没有依赖变化"，也就是那句报错。想让它们也能按名字安装，需要先把三个包发布到 npm。
+
+### 方式三：让 Agent 安装
+
+也可以直接让 Agent 装：把**包目录的绝对路径**或 npm 包名告诉它，它会加进 profile 的 bundle 列表，并在需要时提示你重启 —— 本仓库的四个插件就是这么装上去的。
 
 ### 卸载与单独缺席
 
