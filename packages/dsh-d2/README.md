@@ -49,8 +49,8 @@ its compile route, and the grammar in its chunk (22 KiB: highlight.js core plus 
 | `build/d2-language.mjs` | The D2 grammar for highlight.js |
 | `build/build-chunk.mjs` | esbuild wrapper emitting the loader's chunk envelope, then bumping `client.js` so the revision follows |
 | `cordis.patch.yml` | One row: this bundle |
-| `test/host-half.mjs` | 18 assertions, including a **real** compile through the CLI and the missing-binary message |
-| `test/client-half.mjs` | 20 assertions: the type, the Host compile, a compile error in the view, the code view, and the two paths that must stay inert |
+| `test/host-half.mjs` | 22 assertions, including a **real** compile through the CLI, the missing-binary message, the platform reader and its fallback |
+| `test/client-half.mjs` | 24 assertions: the type, the Host compile, a compile error in the view, the code view, the round trip back to the diagram, and the missing-kit fallback |
 
 ## Install
 

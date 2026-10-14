@@ -74,8 +74,8 @@ concern and needs no renderer, which is the point of the split.
 | `build/mermaid-language.mjs` | The Mermaid grammar for highlight.js |
 | `build/build-chunk.mjs` | esbuild wrapper emitting the loader's chunk envelope, then bumping `client.js` so the revision follows |
 | `cordis.patch.yml` | One row: this bundle. No preset, no tools, no Agent behaviour |
-| `test/host-half.mjs` | 8 assertions: the route, its nonce, its parameters, its fence and its failures |
-| `test/client-half.mjs` | 37 assertions: the type, the body, the read, the two views, zoom and pan, the reload of a second apply, opening the file elsewhere, and the shipped chunk's grammar |
+| `test/host-half.mjs` | 18 assertions: the route, its nonce and parameters, its fence, the platform reader, the fallback when that reader fails, and the diagnostic route |
+| `test/client-half.mjs` | 44 assertions: the type, the body, the read, the two views and the round trip between them, zoom and pan, opening the file elsewhere, the missing-kit fallback, and the shipped chunk's grammar |
 
 ## Install
 
