@@ -1,0 +1,8 @@
+# Bundle patch for dsh-preview-kit.
+#
+# One row, and it registers nothing at runtime: this bundle exists so a sibling preview plugin can
+# `require('dsh-preview-kit')` by name — the module loader resolves declared bundles — and so the
+# kit's `client.js` is served alongside the previews that use it.
+- insert:
+    - id: dsh-preview-kit
+      name: dsh-preview-kit

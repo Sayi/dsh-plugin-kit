@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+
+# dependencies, and the store the chunk build uses
+node_modules/
+.pnpm-store/
+
+# extracted from the installed app for API inspection (recon corpora, never published)
+.asar/
+.asar-elect/
+.asar-web/
+.tools/
+
+# artifacts the plugins produce while they are being tried out
+新建文档*.md
+新建文档*.docx
+新建图表*.mmd
+新建流程图*.mmd
+新建表格*.xlsx
+新建演示文稿*.pptx
+演示文稿*.pptx
+untitled.md
+abc.md
+test-lock*.md
+test-lock*.docx
+docs.docx

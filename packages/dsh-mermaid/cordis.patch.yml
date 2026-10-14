@@ -1,0 +1,10 @@
+# Bundle patch for dsh-mermaid.
+#
+# One row: the preview itself. It carries no Agent behaviour, no preset and no tools — a
+# preview is a Client capability, and the sidebar's tab-type registry is what makes it
+# pluggable. Any plugin that opens `dsh-resource://file/...` gets this renderer for free the
+# moment it is installed, and a different implementation can take the two extensions over by
+# registering them first (the registry ranks the extension band above the built-in fallback).
+- insert:
+    - id: dsh-mermaid
+      name: dsh-mermaid

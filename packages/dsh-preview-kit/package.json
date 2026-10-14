@@ -1,0 +1,39 @@
+{
+  "name": "dsh-preview-kit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared chrome for DeepSeek Harness preview plugins: header row, view dropdown, pan and zoom, highlighted code view, 「打开方式」 menu and a Host diagnostic route — extracted from dsh-mermaid so the next preview is not a second copy.",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "preview"
+  ],
+  "scripts": {
+    "test": "node test/client-half.mjs"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": []
+    }
+  },
+  "license": "MIT"
+}

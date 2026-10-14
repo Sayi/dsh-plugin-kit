@@ -1,0 +1,47 @@
+{
+  "name": "dsh-file-session",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "One Session, one file: the file-session Agent Preset for DeepSeek Harness. It binds a single document, creates it on request, retitles the Session and refuses writes to anything else — previews are separate plugins.",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "agent-preset",
+    "single-file"
+  ],
+  "scripts": {
+    "test": "node test/host-half.mjs && node test/client-half.mjs"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "README.md",
+    "assets/blank.docx"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-sidebar-right",
+        "@deepseek-ai/dsh-client-ui-sidebar-documentpreview",
+        "@deepseek-ai/dsh-api-session-controller",
+        "@deepseek-ai/dsh-client-ui-session"
+      ]
+    }
+  },
+  "license": "MIT"
+}

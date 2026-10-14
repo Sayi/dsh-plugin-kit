@@ -1,0 +1,55 @@
+{
+  "name": "dsh-mermaid",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Mermaid preview for DeepSeek Harness: a right-Sidebar tab type that renders .mmd and .mermaid files, with pan, zoom and highlighted source — installable on its own, and independent of any file-binding plugin.",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "mermaid",
+    "diagram",
+    "preview"
+  ],
+  "scripts": {
+    "test": "node test/host-half.mjs && node test/client-half.mjs",
+    "build:chunk": "node build/build-chunk.mjs"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "client.mermaid.js",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar-right",
+        "@deepseek-ai/dsh-client-ui-sidebar-documentpreview",
+        "@deepseek-ai/dsh-api-session-controller"
+      ]
+    }
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "highlight.js": "^11.12.0",
+    "mermaid": "^12.1.0"
+  },
+  "dependencies": {
+    "dsh-preview-kit": "link:../dsh-preview-kit"
+  },
+  "license": "MIT"
+}

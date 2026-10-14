@@ -1,0 +1,8 @@
+# Bundle patch for dsh-d2.
+#
+# One row: the preview itself. It carries no Agent behaviour and no preset — a preview is a Client
+# capability, and the sidebar's tab-type registry is what makes it pluggable. Rendering happens on
+# the Host, through the `d2` CLI, so this bundle needs that binary on PATH (or DSH_D2_BIN).
+- insert:
+    - id: dsh-d2
+      name: dsh-d2

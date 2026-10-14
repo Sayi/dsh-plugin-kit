@@ -1,0 +1,53 @@
+{
+  "name": "dsh-d2",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "D2 (d2lang) preview for DeepSeek Harness: a right-Sidebar tab type that compiles .d2 files with the d2 CLI and shows them with the shared preview chrome — installable on its own, independent of any file-binding plugin.",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "d2",
+    "d2lang",
+    "diagram",
+    "preview"
+  ],
+  "scripts": {
+    "test": "node test/host-half.mjs && node test/client-half.mjs",
+    "build:chunk": "node build/build-chunk.mjs"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "client.d2.js",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar-right"
+      ]
+    }
+  },
+  "dependencies": {
+    "dsh-preview-kit": "link:../dsh-preview-kit"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "highlight.js": "^11.12.0"
+  },
+  "license": "MIT"
+}
